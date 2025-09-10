@@ -1,10 +1,16 @@
 {
   "name": "pgats-2025-02-base",
   "version": "1.0.0",
-  "description": "",
+  "description": "Projeto base PGATS 2025-02 com REST + GraphQL + Tests",
   "main": "index.js",
+  "type": "commonjs",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "rest:serve": "node rest/server.js",
+    "graphql:serve": "node graphql/server.js",
+    "test:controller": "nyc mocha \"test/controller/**/*.test.js\" --timeout 15000",
+    "test:external": "nyc mocha \"test/external/**/*.test.js\" --timeout 20000",
+    "ci:external": "start-server-and-test \"npm:rest:serve\" http://localhost:3000 \"start-server-and-test npm:graphql:serve http://localhost:4000 'npm run test:external'\"",
+    "test": "npm run test:controller && npm run ci:external"
   },
   "repository": {
     "type": "git",
@@ -13,16 +19,44 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
   "bugs": {
     "url": "https://github.com/juliodelimas/pgats-2025-02-base/issues"
   },
   "homepage": "https://github.com/juliodelimas/pgats-2025-02-base#readme",
   "dependencies": {
     "apollo-server-express": "^3.13.0",
+    "dotenv": "^17.2.2",
     "express": "^4.21.2",
     "graphql": "^16.11.0",
     "jsonwebtoken": "^9.0.2",
     "swagger-ui-express": "^5.0.1"
+  },
+  "devDependencies": {
+    "chai": "^4.5.0",
+    "mocha": "^10.8.2",
+    "nyc": "^15.1.0",
+    "start-server-and-test": "^2.1.0",
+    "supertest": "^7.1.4"
+  },
+  "nyc": {
+    "reporter": [
+      "text",
+      "lcov"
+    ],
+    "all": true,
+    "include": [
+      "rest/**/*.js",
+      "graphql/**/*.js",
+      "src/**/*.js"
+    ],
+    "exclude": [
+      "**/server.js",
+      "test/**"
+    ],
+    "check-coverage": true,
+    "branches": 50,
+    "functions": 60,
+    "lines": 60,
+    "statements": 60
   }
 }

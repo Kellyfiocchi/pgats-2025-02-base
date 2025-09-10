@@ -1,1 +1,13 @@
 node_modules/
+coverage/
+*.log
+npm-debug.log*
+
+# configs locais
+.env
+.env.*
+.vscode/
+
+# SO
+.DS_Store
+Thumbs.db

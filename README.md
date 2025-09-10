@@ -1,218 +1,215 @@
-# API Checkout Rest e GraphQL
+# Trabalho de Conclusão — Automação de Testes na Camada de Serviço (API)
 
-Se você é aluno da Pós-Graduação em Automação de Testes de Software (Turma 2), faça um fork desse repositório e boa sorte em seu trabalho de conclusão da disciplina.
+Este projeto foi desenvolvido como parte da **Pós-graduação em Automação de Testes de Software**, no módulo **Automação de Testes na Camada de Serviço (API)**.
 
-## Instalação
+O objetivo foi construir e testar serviços em **REST** e **GraphQL**, aplicando conceitos de autenticação, documentação e automação de testes na pipeline de CI.
+
+---
+
+## 📌 Objetivos do Trabalho
+
+- Construir uma **API própria** (Notes) em **REST** e **GraphQL**.
+- Implementar autenticação via **API-Key** (header `x-api-key`) e **JWT** (para usuários).
+- Garantir documentação com **Swagger** (REST).
+- Criar e automatizar **testes**:
+  - **Controller tests** (sem subir servidor).
+  - **External tests** (servidor real, via URL).
+- Configurar **pipeline CI/CD** com GitHub Actions.
+- Atingir métricas de **cobertura** (≥ 60% linhas/funções).
+
+---
+
+## 🛠️ Tecnologias Utilizadas
+
+- **Node.js / Express** → APIs REST
+- **Apollo Server (GraphQL)** → APIs GraphQL
+- **JWT (jsonwebtoken)** → autenticação de usuários
+- **Swagger UI** → documentação dos endpoints REST
+- **Mocha, Chai, Supertest** → testes automatizados
+- **NYC (Istanbul)** → cobertura de código
+- **start-server-and-test** → testes external na pipeline
+- **GitHub Actions** → CI/CD
+
+---
+
+## 📂 Estrutura do Projeto
+
+```text
+📦 pgats-2025-02-base
+├─ 📂 rest
+│  ├─ 📂 controllers
+│  │   ├─ checkoutController.js
+│  │   ├─ notes.controller.js
+│  │   └─ userController.js
+│  ├─ 📂 routes
+│  │   ├─ checkoutRoutes.js
+│  │   ├─ notes.routes.js
+│  │   └─ userRoutes.js
+│  ├─ app.js
+│  ├─ server.js
+│  └─ swagger.js
+│
+├─ 📂 graphql
+│  ├─ schema.js
+│  ├─ resolvers.js
+│  ├─ app.js
+│  └─ server.js
+│
+├─ 📂 src
+│  ├─ 📂 models
+│  │   ├─ noteModel.js
+│  │   ├─ product.js
+│  │   └─ user.js
+│  └─ 📂 services
+│      ├─ apiKeyAuth.js
+│      ├─ checkoutService.js
+│      └─ userService.js
+│
+├─ 📂 test
+│  ├─ 📂 controller
+│  │   ├─ graphql.context.controller.test.js
+│  │   ├─ graphql.health.controller.test.js
+│  │   ├─ noteModel.unit.test.js
+│  │   ├─ notes.gql.controller.test.js
+│  │   ├─ notes.gql.errors.controller.test.js
+│  │   ├─ notes.rest.controller.test.js
+│  │   ├─ notes.rest.errors.controller.test.js
+│  │   ├─ rest.health.controller.test.js
+│  │   └─ userService.unit.test.js
+│  └─ 📂 external
+│      ├─ rest.external.test.js
+│      └─ notes.external.test.js
+│
+├─ 📂 .github
+│  └─ 📂 workflows
+│       └─ ci.yml
+│
+├─ .env
+├─ .gitignore
+├─ package.json
+└─ README.md
+```
+
+## 🔑 Funcionalidades Principais
+
+### API REST
+
+- `GET /health` → status do serviço.
+- `POST /api/notes` → cria nota (**x-api-key obrigatório**).
+- `GET /api/notes` → lista notas.
+- `PATCH /api/notes/:id` → edita nota.
+- `DELETE /api/notes/:id` → remove nota.
+
+### API GraphQL
+
+- `query { health }` → status.
+- `query { myNotes }` → lista notas (**x-api-key**).
+- `mutation { addNote, editNote, removeNote }`.
+- `mutation { register, login, checkout }` → fluxo de usuários e compras (**JWT**).
+
+---
+
+## ✅ Testes Automatizados
+
+### Controller Tests
+
+Simulam requests no **app** sem subir servidor.  
+**Exemplos**:
+
+- Health REST/GraphQL.
+- CRUD de Notes (sucesso e erros).
+- Unit de `noteModel` e `userService`.
+
+### External Tests
+
+Sobem **REST/GraphQL** em portas reais (`3000/4000`) e testam via URL.
+
+---
+
+## 📊 Cobertura
+
+Configuração em `package.json` (**nyc**):
+
+- Linhas ≥ **60%**
+- Funções ≥ **60%**
+- Branches ≥ **50%**
+- Statements ≥ **60%**
+
+Relatórios em **texto** e **LCOV** (para integração com SonarQube ou cobertura no CI).
+
+---
+
+## ⚙️ Pipeline (CI/CD)
+
+Workflow no **GitHub Actions** (`.github/workflows/ci.yml`):
+
+1. Instala dependências.
+2. Roda testes controller (`npm run test:controller`).
+3. Sobe REST + GraphQL com **start-server-and-test**.
+4. Executa external tests (`npm run test:external`).
+5. Publica relatório de cobertura.
+
+## ⚙️ Pipeline (CI/CD)
+
+Workflow no **GitHub Actions** (`.github/workflows/ci.yml`):
+
+1. Instala dependências.
+2. Roda testes controller (`npm run test:controller`).
+3. Sobe REST + GraphQL com **start-server-and-test**.
+4. Executa external tests (`npm run test:external`).
+5. Publica relatório de cobertura.
+
+## 🚀 Como Executar Localmente
+
+1. **Clone o repositório:**
+   ```bash
+   git clone https://github.com/Kellyfiocchi/pgats-2025-02-base
+   cd pgats-2025-02-base
+   ```
+2. **Instale dependências:**
 
 ```bash
-npm install express jsonwebtoken swagger-ui-express apollo-server-express graphql
+npm install
 ```
 
-## Exemplos de chamadas
+3. **Configure .env:**
 
-### REST
-
-#### Registro de usuário
 ```bash
-curl -X POST http://localhost:3000/api/users/register \
-	-H "Content-Type: application/json" \
-	-d '{"name":"Novo Usuário","email":"novo@email.com","password":"senha123"}'
+API_KEY=dev123
 ```
 
-#### Login
+4. **Suba o REST:**
+
 ```bash
-curl -X POST http://localhost:3000/api/users/login \
-	-H "Content-Type: application/json" \
-	-d '{"email":"novo@email.com","password":"senha123"}'
+npm run rest:serve
 ```
 
-#### Checkout (boleto)
+5. **Suba o GraphQL:**
+
 ```bash
-curl -X POST http://localhost:3000/api/checkout \
-	-H "Content-Type: application/json" \
-	-H "Authorization: Bearer <TOKEN_JWT>" \
-	-d '{
-		"items": [{"productId":1,"quantity":2}],
-		"freight": 20,
-		"paymentMethod": "boleto"
-	}'
+npm run graphql:serve
 ```
 
-#### Checkout (cartão de crédito)
+6. **Rode os testes:**
+
 ```bash
-curl -X POST http://localhost:3000/api/checkout \
-	-H "Content-Type: application/json" \
-	-H "Authorization: Bearer <TOKEN_JWT>" \
-	-d '{
-		"items": [{"productId":2,"quantity":1}],
-		"freight": 15,
-		"paymentMethod": "credit_card",
-		"cardData": {
-			"number": "4111111111111111",
-			"name": "Nome do Titular",
-			"expiry": "12/30",
-			"cvv": "123"
-		}
-	}'
+npm test
 ```
 
-### GraphQL
+6. **Teste rápido (cURL):**
 
-#### Registro de usuário
-Mutation:
-```graphql
-mutation Register($name: String!, $email: String!, $password: String!) {
-  register(name: $name, email: $email, password: $password) {
-    email
-    name
-  }
-}
-
-Variables:
-{
-  "name": "Julio",
-  "email": "julio@abc.com",
-  "password": "123456"
-}
-```
-
-#### Login
-Mutation:
-```graphql
-mutation Login($email: String!, $password: String!) {
-  login(email: $email, password: $password) {
-    token
-  }
-}
-
-Variables:
-{
-  "email": "alice@email.com",
-  "password": "123456"
-}
-```
-
-
-#### Checkout (boleto)
-Mutation (envie o token JWT no header Authorization: Bearer <TOKEN_JWT>):
-```graphql
-mutation Checkout($items: [CheckoutItemInput!]!, $freight: Float!, $paymentMethod: String!, $cardData: CardDataInput) {
-  checkout(items: $items, freight: $freight, paymentMethod: $paymentMethod, cardData: $cardData) {
-    freight
-    items {
-      productId
-      quantity
-    }
-    paymentMethod
-    userId
-    valorFinal
-  }
-}
-
-Variables:
-{
-  "items": [
-    {
-      "productId": 1,
-      "quantity": 2
-    },
-    {
-      "productId": 2,
-      "quantity": 1
-    }
-  ],
-  "freight": 10,
-  "paymentMethod": "boleto"
-}
-```
-
-#### Checkout (cartão de crédito)
-Mutation (envie o token JWT no header Authorization: Bearer <TOKEN_JWT>):
-```graphql
-mutation {
-	checkout(
-		items: [{productId: 2, quantity: 1}],
-		freight: 15,
-		paymentMethod: "credit_card",
-		cardData: {
-			number: "4111111111111111",
-			name: "Nome do Titular",
-			expiry: "12/30",
-			cvv: "123"
-		}
-	) {
-		valorFinal
-		paymentMethod
-		freight
-		items { productId quantity }
-	}
-}
-
-Variables:
-{
-  "items": [
-    {
-      "productId": 1,
-      "quantity": 2
-    },
-    {
-      "productId": 2,
-      "quantity": 1
-    }
-  ],
-  "freight": 10,
-  "paymentMethod": "credit_card",
-  "cardData": {
-    "cvv": "123",
-    "expiry": "10/04",
-    "name": "Julio Costa",
-    "number": "1234432112344321"
-  }
-}
-```
-
-#### Consulta de usuários
-Query:
-```graphql
-query Users {
-  users {
-    email
-    name
-  }
-}
-```
-
-## Como rodar
-
-### REST
 ```bash
-node rest/server.js
+# cria
+curl -X POST http://localhost:3000/api/notes \
+  -H "Content-Type: application/json" \
+  -H "x-api-key: dev123" \
+  -d '{"title":"Primeira nota","content":"olá"}'
+
+# lista
+curl -H "x-api-key: dev123" http://localhost:3000/api/notes
 ```
-Acesse a documentação Swagger em [http://localhost:3000/api-docs](http://localhost:3000/api-docs)
 
-### GraphQL
-```bash
-node graphql/app.js
-```
-Acesse o playground GraphQL em [http://localhost:4000/graphql](http://localhost:4000/graphql)
+## 🎓 Conclusão
 
-## Endpoints REST
-- POST `/api/users/register` — Registro de usuário
-- POST `/api/users/login` — Login (retorna token JWT)
-- POST `/api/checkout` — Checkout (requer token JWT)
-
-## Regras de Checkout
-- Só pode fazer checkout com token JWT válido
-- Informe lista de produtos, quantidades, valor do frete, método de pagamento e dados do cartão se necessário
-- 5% de desconto no valor total se pagar com cartão
-- Resposta do checkout contém valor final
-
-## Banco de dados
-- Usuários e produtos em memória (veja arquivos em `src/models`)
-
-## Testes
-- Para testes automatizados, importe o `app` de `rest/app.js` ou `graphql/app.js` sem o método `listen()`
-
-## Documentação
-- Swagger disponível em `/api-docs`
-- Playground GraphQL disponível em `/graphql`
+Este trabalho consolidou os aprendizados do módulo Automação de Testes na Camada de Serviço (API) da Pós-graduação em Automação de Testes de Software.
+Aplicamos, na prática, a construção de APIs REST e GraphQL, autenticação com API-Key e JWT, documentação com Swagger, testes automatizados com Mocha/Chai/Supertest, além de integração contínua no GitHub Actions com métricas de cobertura.

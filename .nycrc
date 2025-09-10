@@ -1,0 +1,11 @@
+{
+  "reporter": ["text", "lcov"],
+  "all": true,
+  "include": ["rest/**/*.js","graphql/**/*.js","src/**/*.js"],
+  "exclude": ["**/server.js","test/**"],
+  "check-coverage": true,
+  "branches": 50,
+  "functions": 60,
+  "lines": 60,
+  "statements": 60
+}

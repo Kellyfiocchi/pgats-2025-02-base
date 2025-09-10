@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      NODE_ENV: test
+      # REST
+      PORT: 3000
+      REST_BASE_URL: http://localhost:3000
+      # GraphQL
+      GRAPHQL_BASE_URL: http://localhost:4000
+      GRAPHQL_PATH: /graphql
+      # Sua API-Key (pode mover para secret se preferir)
+      API_KEY: dev123
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Controller tests (REST + GraphQL sem subir servidor)
+        run: npm run test:controller
+
+      - name: External tests (sobe REST + GraphQL e testa via URL)
+        run: npm run ci:external
+
+      - name: Upload coverage (LCOV)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-lcov
+          path: coverage/lcov.info
