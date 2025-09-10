@@ -11,14 +11,16 @@ jobs:
     runs-on: ubuntu-latest
     env:
       NODE_ENV: test
-      # REST
-      PORT: 3000
+      # Ports dedicadas
+      REST_PORT: 3000
+      GRAPHQL_PORT: 4000
+      # Bases usadas pelos testes external (se necessário)
       REST_BASE_URL: http://localhost:3000
-      # GraphQL
       GRAPHQL_BASE_URL: http://localhost:4000
       GRAPHQL_PATH: /graphql
-      # Sua API-Key (pode mover para secret se preferir)
+      # API-Key de desenvolvimento (use secret se preferir)
       API_KEY: dev123
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
