@@ -36,57 +36,63 @@ O objetivo foi construir e testar serviços em **REST** e **GraphQL**, aplicando
 
 ```text
 📦 pgats-2025-02-base
-├─ 📂 rest
-│  ├─ 📂 controllers
-│  │   ├─ checkoutController.js
-│  │   ├─ notes.controller.js
-│  │   └─ userController.js
-│  ├─ 📂 routes
-│  │   ├─ checkoutRoutes.js
-│  │   ├─ notes.routes.js
-│  │   └─ userRoutes.js
-│  ├─ app.js
-│  ├─ server.js
-│  └─ swagger.js
-│
-├─ 📂 graphql
-│  ├─ schema.js
-│  ├─ resolvers.js
-│  ├─ app.js
-│  └─ server.js
-│
-├─ 📂 src
-│  ├─ 📂 models
-│  │   ├─ noteModel.js
-│  │   ├─ product.js
-│  │   └─ user.js
-│  └─ 📂 services
-│      ├─ apiKeyAuth.js
-│      ├─ checkoutService.js
-│      └─ userService.js
-│
-├─ 📂 test
-│  ├─ 📂 controller
-│  │   ├─ graphql.context.controller.test.js
-│  │   ├─ graphql.health.controller.test.js
-│  │   ├─ noteModel.unit.test.js
-│  │   ├─ notes.gql.controller.test.js
-│  │   ├─ notes.gql.errors.controller.test.js
-│  │   ├─ notes.rest.controller.test.js
-│  │   ├─ notes.rest.errors.controller.test.js
-│  │   ├─ rest.health.controller.test.js
-│  │   └─ userService.unit.test.js
-│  └─ 📂 external
-│      ├─ rest.external.test.js
-│      └─ notes.external.test.js
-│
 ├─ 📂 .github
 │  └─ 📂 workflows
-│       └─ ci.yml
+│     └─ nodejs.yml                 # Pipeline CI (tests + upload de cobertura)
 │
-├─ .env
-├─ .gitignore
-├─ package.json
+├─ 📂 coverage/                      # Relatórios NYC (gerado pelos controller tests)
+│  ├─ lcov-report/                   # HTML da cobertura
+│  └─ lcov.info                      # LCOV (usado no upload do CI)
+│
+├─ 📂 graphql/                       # API GraphQL (Apollo Server)
+│  ├─ app.js                         # Monta ApolloServer + context (auth)
+│  ├─ resolvers.js                   # Implementação de queries/mutations
+│  ├─ schema.js                      # SDL: tipos, queries e mutations
+│  └─ server.js                      # Sobe servidor GraphQL (porta 4000)
+│
+├─ 📂 rest/                          # API REST (Express)
+│  ├─ 📂 controllers
+│  │  ├─ checkoutController.js       # Checkout (exemplo)
+│  │  ├─ notes.controller.js         # CRUD de notas
+│  │  └─ userController.js           # Login/registro (exemplo)
+│  ├─ 📂 routes
+│  │  ├─ checkoutRoutes.js           # Rotas /api/checkout
+│  │  ├─ notes.routes.js             # Rotas /api/notes (x-api-key)
+│  │  └─ userRoutes.js               # Rotas /api/users
+│  ├─ app.js                         # App Express (middlewares/rotas/swagger)
+│  ├─ server.js                      # Sobe servidor REST (porta 3000)
+│  └─ swagger.js                     # Config do Swagger UI (/api-docs)
+│
+├─ 📂 src/
+│  ├─ 📂 models                      # Camada de dados (in-memory)
+│  │  ├─ noteModel.js
+│  │  ├─ product.js
+│  │  └─ user.js
+│  └─ 📂 services                    # Regras de negócio / helpers
+│     ├─ apiKeyAuth.js               # Middleware x-api-key
+│     ├─ checkoutService.js
+│     └─ userService.js              # JWT, login/registro
+│
+├─ 📂 test/
+│  ├─ 📂 controller                  # Tests sem subir servidor (com NYC)
+│  │  ├─ graphql.context.controller.test.js
+│  │  ├─ graphql.health.controller.test.js
+│  │  ├─ noteModel.unit.test.js
+│  │  ├─ notes.gql.controller.test.js
+│  │  ├─ notes.gql.errors.controller.test.js
+│  │  ├─ notes.rest.controller.test.js
+│  │  ├─ notes.rest.errors.controller.test.js
+│  │  ├─ rest.health.controller.test.js
+│  │  └─ userService.unit.test.js
+│  └─ 📂 external                    # Tests E2E via HTTP (sem NYC)
+│     ├─ graphql.external.test.js
+│     ├─ notes.external.test.js
+│     └─ rest.external.test.js
+│
+├─ .env                              # Variáveis locais (ex.: API_KEY=dev123)
+├─ .nycrc                            # Config do NYC (limiares/paths)
+├─ package.json                      # Scripts e dependências
+├─ package-lock.json
 └─ README.md
 ```
 
@@ -207,6 +213,19 @@ curl -X POST http://localhost:3000/api/notes \
 
 # lista
 curl -H "x-api-key: dev123" http://localhost:3000/api/notes
+```
+
+7. **Scripts úteis (NPM)**
+
+```bash
+# REST e GraphQL (local)
+npm run rest:serve
+npm run graphql:serve
+
+# Testes (cobertura só nos controller tests)
+npm run test:controller
+npm run ci:external     # sobe servidores e roda external tests
+npm test                # controller + external, com upload do LCOV no CI
 ```
 
 ## 🎓 Conclusão
