@@ -10,7 +10,7 @@
     "dev:servers": "concurrently -k -s first -n REST,GRAPHQL \"npm run rest:serve\" \"npm run graphql:serve\"",
     "test:controller": "nyc mocha \"test/controller/**/*.test.js\" --timeout 15000",
     "test:external": "nyc mocha \"test/external/**/*.test.js\" --timeout 20000 --exit",
-    "wait-and-test": "wait-on -v -t 120000 http-get://localhost:4000/graphql && npm run test:external",
+    "wait-and-test": "echo \"[CI] aguardando GraphQL (tcp:4000)...\" && wait-on -v -t 120000 tcp:4000 && echo \"[CI] rodando external tests\" && npm run test:external",
     "ci:external": "start-server-and-test dev:servers http://localhost:3000 wait-and-test",
     "test": "npm run test:controller && npm run ci:external"
   },
